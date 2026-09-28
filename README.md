@@ -1,1 +1,5 @@
-# roundcube-xdebug-docker-setup
+# Setup for roundcube debugging
+
+![alt text](images/image.png)
+
+![alt text](images/image-1.png)

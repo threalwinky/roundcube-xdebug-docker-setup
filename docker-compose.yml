@@ -1,0 +1,40 @@
+services:
+  roundcube:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: roundcube-xdebug:local
+    container_name: roundcube
+    depends_on:
+      - mail
+    ports:
+      - "127.0.0.1:8000:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      ROUNDCUBEMAIL_DEFAULT_HOST: mail
+      ROUNDCUBEMAIL_DEFAULT_PORT: 3143
+      ROUNDCUBEMAIL_SMTP_SERVER: mail
+      ROUNDCUBEMAIL_SMTP_PORT: 3025
+      ROUNDCUBEMAIL_DB_TYPE: sqlite
+      ROUNDCUBEMAIL_PLUGINS: archive,zipdownload
+    volumes:
+      - roundcube-db:/var/roundcube/db:rw
+      - ./config:/var/roundcube/config:rw
+      - ./src:/var/www/html:rw
+      
+  mail:
+    image: greenmail/standalone:2.1.14
+    container_name: greenmail
+    environment:
+      GREENMAIL_OPTS: >-
+        -Dgreenmail.setup.test.smtp
+        -Dgreenmail.setup.test.imap
+        -Dgreenmail.hostname=0.0.0.0
+        -Dgreenmail.users=alice:alicepw@lab.local,bob:bobpw@lab.local
+    ports:
+      - "127.0.0.1:3025:3025"
+      - "127.0.0.1:3143:3143"
+
+volumes:
+  roundcube-db:
